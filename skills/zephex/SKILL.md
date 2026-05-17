@@ -42,7 +42,7 @@ scope_task → get_project_context → read_code → find_code → [implement]
 | zephex:check_package | npm exists + version + postinstall risk | Before any npm install | ~200 vs 6k manual |
 | zephex:audit_package | CVEs + breaking changes + migration | Before upgrading packages | ~400 vs 8k manual |
 | zephex:audit_headers | HTTP/TLS grade A+ to F | After every production deploy | ~400 vs 8k manual |
-| zephex:inspect_url | Clean content from any public URL | Reading external docs | ~300 vs browser paste |
+| zephex:Zephex_dev_info | Search a curated dev knowledge base (Stripe / Supabase / CSP / JWT / AWS / Bun / Expo) | Recipes for setup, security, deployment | ~150 per lookup |
 | zephex:thinking | Stateful session — tracks what you checked | Complex bugs, risky changes | ~200 per update |
 
 ## Hard Rules
@@ -53,6 +53,8 @@ scope_task → get_project_context → read_code → find_code → [implement]
 - Never run npm install without calling zephex:check_package first
 - Always call zephex:audit_headers after any production deploy
 - Open zephex:thinking when you've hit 3+ dead ends in debugging
+- Pass `path` directly when the user mentions a GitHub URL or repo name (`github:owner/repo` or full URL). Don't dump source into `inline_files` if a remote URL works.
+- For private GitHub repos, the server uses `GITHUB_PAT`. If a private-repo call returns ACTION_REQUIRED, retry with `inline_files`.
 
 ## Setup
 

@@ -6,17 +6,17 @@
 
 ```bash
 # Auto-detect installed agents
-npx skills add zephex/agent-skills
+npx skills add zephexMCP/agent-skills
 
 # Target specific agents
-npx skills add zephex/agent-skills -a claude-code
-npx skills add zephex/agent-skills -a cursor
-npx skills add zephex/agent-skills -a vscode
-npx skills add zephex/agent-skills -a windsurf
-npx skills add zephex/agent-skills -a cline
-npx skills add zephex/agent-skills -a opencode
-npx skills add zephex/agent-skills -a codex-cli
-npx skills add zephex/agent-skills -a zed
+npx skills add zephexMCP/agent-skills -a claude-code
+npx skills add zephexMCP/agent-skills -a cursor
+npx skills add zephexMCP/agent-skills -a vscode
+npx skills add zephexMCP/agent-skills -a windsurf
+npx skills add zephexMCP/agent-skills -a cline
+npx skills add zephexMCP/agent-skills -a opencode
+npx skills add zephexMCP/agent-skills -a codex-cli
+npx skills add zephexMCP/agent-skills -a zed
 ```
 
 ## Prerequisites
