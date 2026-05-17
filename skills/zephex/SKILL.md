@@ -1,11 +1,13 @@
 ---
 name: zephex
 description: >-
-  Teaches agents to use Zephex's 10 hosted MCP tools at zephex.dev/mcp for
-  codebase intelligence, package safety, and security auditing. Use when
-  starting a coding task, reading code, searching a repo, installing or
-  upgrading packages, auditing HTTP headers, fetching external docs, or
-  debugging complex issues. Requires ZEPHEX_API_KEY.
+  Connects AI coding agents to the Zephex MCP gateway at
+  zephex.dev/mcp. Use when starting any coding task, reading
+  a codebase, installing packages, deploying to production,
+  or debugging hard problems. Provides 10 tools: AST code
+  scoping, live npm/PyPI/Cargo audits, HTTP security grading,
+  and stateful reasoning. Replaces blind file reads with
+  targeted tool calls.
 license: MIT
 metadata:
   homepage: https://zephex.dev
@@ -14,7 +16,7 @@ metadata:
 
 ## Overview
 
-Zephex is a hosted MCP gateway that prevents wasted file reads, catches breaking changes before they ship, and grounds every code decision in what actually exists — not what training data guesses. One endpoint at zephex.dev/mcp. Requires ZEPHEX_API_KEY in your environment.
+Zephex is a hosted MCP gateway at zephex.dev/mcp providing 10 tools for codebase intelligence, live package registry auditing, and HTTP security grading — instead of guessing from training data. Every tool returns real data: actual file structure from local or remote repos, live npm/PyPI/Cargo registry responses, and wire-level HTTP header audits. Requires ZEPHEX_API_KEY in your environment.
 
 ## Call Order
 
@@ -24,39 +26,33 @@ Zephex is a hosted MCP gateway that prevents wasted file reads, catches breaking
 4. zephex:find_code — before implementing anything new. Pass the pattern.
 5. zephex:thinking — when stuck after 3+ investigated paths.
 
-```
-scope_task → get_project_context → read_code → find_code → [implement]
-                                                              ↑
-                                              thinking (if stuck)
-```
+## Tools
 
-## All 10 Tools
-
-| Tool | What it does | Call when | Token cost |
-|---|---|---|---|
-| zephex:scope_task | Returns ≤7 files + utilities + callers at risk | FIRST, always | ~300 vs 18k manual |
-| zephex:get_project_context | Stack, auth, hosting, queues, key files | New repo/session | ~500 vs 40k manual |
-| zephex:read_code | Symbol extraction + imports + call sites | Instead of full file reads | ~400 vs 8k manual |
-| zephex:find_code | Repo-wide ripgrep | Before implementing anything new | ~150 vs 20k manual |
-| zephex:explain_architecture | End-to-end request/auth/billing flow | Before touching auth or DB | ~600 vs 30k manual |
-| zephex:check_package | npm exists + version + postinstall risk | Before any npm install | ~200 vs 6k manual |
-| zephex:audit_package | CVEs + breaking changes + migration | Before upgrading packages | ~400 vs 8k manual |
-| zephex:audit_headers | HTTP/TLS grade A+ to F | After every production deploy | ~400 vs 8k manual |
-| zephex:Zephex_dev_info | Search a curated dev knowledge base (Stripe / Supabase / CSP / JWT / AWS / Bun / Expo) | Recipes for setup, security, deployment | ~150 per lookup |
-| zephex:thinking | Stateful session — tracks what you checked | Complex bugs, risky changes | ~200 per update |
+| Tool | Purpose | Call when |
+|---|---|---|
+| zephex:scope_task | Returns focus-file set + callers at risk | FIRST, always |
+| zephex:get_project_context | Stack, auth, hosting, key files | New repo/session |
+| zephex:read_code | Symbol extraction by name or file | Instead of full file reads |
+| zephex:find_code | BM25-ranked repo-wide code search | Before implementing |
+| zephex:explain_architecture | Entry points, auth flow, services | Before touching auth or DB |
+| zephex:check_package | npm/PyPI/Cargo version + postinstall risk | Before any install |
+| zephex:audit_package | CVEs + breaking changes + migration steps | Before upgrading |
+| zephex:audit_headers | HTTP/TLS grade A+ to F + fix snippets | After production deploy |
+| zephex:Zephex_dev_info | Search the Zephex dev knowledge base (Stripe, Supabase, JWT, CSP, AWS, Bun, Expo). Use operation:search first, then operation:get with the returned slug. | Recipes, setup, security |
+| zephex:thinking | Stateful reasoning with drift detection | Hard bugs, risky changes |
 
 ## Hard Rules
 
-- Never open a file before calling zephex:scope_task
-- Never read a full file — use zephex:read_code with the symbol name
-- Never implement a new function before calling zephex:find_code
-- Never run npm install without calling zephex:check_package first
-- Always call zephex:audit_headers after any production deploy
-- Open zephex:thinking when you've hit 3+ dead ends in debugging
-- Pass `path` directly when the user mentions a GitHub URL or repo name (`github:owner/repo` or full URL). Don't dump source into `inline_files` if a remote URL works.
-- For private GitHub repos, the server uses `GITHUB_PAT`. If a private-repo call returns ACTION_REQUIRED, retry with `inline_files`.
+1. Never open a file before calling zephex:scope_task
+2. Never read a full file — use zephex:read_code with the symbol name
+3. Never implement a new function before calling zephex:find_code
+4. Never run npm install without calling zephex:check_package first
+5. Always call zephex:audit_headers after any production deploy
+6. Open zephex:thinking when you've hit 3+ dead ends in debugging
 
-## Setup
+## References
 
-Get your API key at zephex.dev/signup. See references/setup.md.
-For full editor configs, see references/configs.md.
+- Full tool docs: skills/zephex/references/tools.md
+- Tool description design rationale: skills/zephex/references/tools-info.md
+- Editor configs (all 13 editors): skills/zephex/references/configs.md
+- First-time setup: skills/zephex/references/setup.md

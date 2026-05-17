@@ -733,7 +733,7 @@ All three.
 
 ---
 
-9. zephex:Zephex_dev_info (replaces inspect_url in your skill)
+9. zephex:Zephex_dev_info
 
   Call when: User asks "how do I do X" with a topic in our knowledge base — Stripe webhooks, Supabase RLS, Convex schemas, CSP/CORS hardening, JWT rotation, AWS ECS deploy
   patterns, Bun runtime, Next.js 16 patterns, Expo / Play Store signing, etc. Two-step lookup: search then get.

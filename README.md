@@ -37,7 +37,7 @@ npx skills add zephexMCP/agent-skills -a zed
 | zephex:check_package | npm version + postinstall risk |
 | zephex:audit_package | CVEs + breaking changes |
 | zephex:audit_headers | HTTP/TLS grade A+ to F |
-| zephex:inspect_url | Clean content from any URL |
+| zephex:Zephex_dev_info | Search the Zephex dev knowledge base (Stripe, Supabase, JWT, CSP, AWS, Bun, Expo). Use operation:search first, then operation:get with the returned slug. |
 | zephex:thinking | Stateful reasoning |
 
 ## Supported Editors
