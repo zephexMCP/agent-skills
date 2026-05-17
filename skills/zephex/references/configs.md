@@ -1,5 +1,15 @@
 # Editor Configs — All 13 Editors
 
+## Contents
+
+- [Group 1: stdio + API key in env](#group-1-stdio-api-key-in-env)
+- [Group 2: HTTP + Bearer header](#group-2-http-bearer-header)
+- [Group 3: HTTP + OAuth (no API key)](#group-3-http-oauth-no-api-key)
+- [Group 4: streamableHttp](#group-4-streamablehttp)
+- [Group 5: VS Code inputs prompt](#group-5-vs-code-inputs-prompt)
+- [Group 6: TOML](#group-6-toml)
+- [Common Mistakes](#common-mistakes)
+
 ## Group 1: stdio + API key in env
 
 **Claude Code** — `.mcp.json` (project root)

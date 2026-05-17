@@ -1,5 +1,23 @@
 # Zephex MCP — Tool Description Rewrite
 
+## Contents
+
+- [1. Why we changed the descriptions at all](#1-why-we-changed-the-descriptions-at-all)
+  - [1.1 The old descriptions had four hard problems](#11-the-old-descriptions-had-four-hard-problems)
+  - [1.2 Why this is not a stylistic preference](#12-why-this-is-not-a-stylistic-preference)
+  - [1.3 The point](#13-the-point)
+- [2. Sources behind the rewrite](#2-sources-behind-the-rewrite)
+- [3. The rules — what we agreed on, in writing](#3-the-rules--what-we-agreed-on-in-writing)
+- [4. Per-tool before / after](#4-per-tool-before--after)
+- [5. Parameter description changes](#5-parameter-description-changes)
+- [6. Measured token impact](#6-measured-token-impact)
+- [7. Where the deleted content went](#7-where-the-deleted-content-went)
+- [8. What is intentionally not changed](#8-what-is-intentionally-not-changed)
+- [9. How to write a new Zephex tool description (the checklist)](#9-how-to-write-a-new-zephex-tool-description-the-checklist)
+- [10. Files modified by this rewrite](#10-files-modified-by-this-rewrite)
+- [11. Verification](#11-verification)
+- [12. The bottom line](#12-the-bottom-line)
+
 **Date:** 2026-05-17
 **Author:** Kiro
 **Scope:** `find_code`, `read_code`, `scope_task`, `explain_architecture`

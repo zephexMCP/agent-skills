@@ -2,17 +2,32 @@
 name: zephex
 description: >-
   Connects AI coding agents to the Zephex MCP gateway at
-  zephex.dev/mcp. Use when starting any coding task, reading
-  a codebase, installing packages, deploying to production,
-  or debugging hard problems. Provides 10 tools: AST code
-  scoping, live npm/PyPI/Cargo audits, HTTP security grading,
-  and stateful reasoning. Replaces blind file reads with
-  targeted tool calls.
-license: MIT
-metadata:
-  homepage: https://zephex.dev
-  docs: https://zephex.dev/docs
+  zephex.dev/mcp for codebase intelligence. Use when starting
+  any codebase task, reading unfamiliar code, searching for
+  existing functions before writing new ones, installing or
+  upgrading packages, running security audits, debugging after
+  3+ failed attempts, or deploying to production. Replaces
+  blind file reads and guessed package versions with 10 targeted
+  tools: AST-based code scoping, repo-wide search, architecture
+  tracing, live npm/PyPI/Cargo registry checks, CVE auditing,
+  HTTP security grading, and stateful reasoning with drift
+  detection. Do NOT use raw file reads or grep when a zephex
+  tool covers the task.
+compatibility: >-
+  Requires Zephex API key from zephex.dev/signup (free tier).
+  OAuth editors (OpenCode, Kiro CLI, Gemini CLI, Cline)
+  require no key. Needs outbound network to zephex.dev/mcp.
 ---
+
+## Workflow Checklist
+
+Copy this and check off each step as you go:
+
+- [ ] 1. zephex:scope_task — define file boundaries (ALWAYS FIRST)
+- [ ] 2. zephex:get_project_context — load stack/auth/deps (once per session)
+- [ ] 3. zephex:read_code or zephex:find_code — targeted reads only
+- [ ] 4. zephex:check_package — before any package install
+- [ ] 5. zephex:audit_headers — after any production deploy
 
 ## Overview
 

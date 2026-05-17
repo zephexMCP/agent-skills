@@ -1,23 +1,18 @@
 # Zephex Agent Skills
 
+[![Install on skills.sh](https://skills.sh/b/zephexMCP/agent-skills)](https://skills.sh/zephexMCP/agent-skills)
+
 > Teach your AI coding agent to use Zephex's 10 MCP tools correctly.
 
 ## Install
 
 ```bash
-# Auto-detect installed agents
 npx skills add zephexMCP/agent-skills
-
-# Target specific agents
-npx skills add zephexMCP/agent-skills -a claude-code
-npx skills add zephexMCP/agent-skills -a cursor
-npx skills add zephexMCP/agent-skills -a vscode
-npx skills add zephexMCP/agent-skills -a windsurf
-npx skills add zephexMCP/agent-skills -a cline
-npx skills add zephexMCP/agent-skills -a opencode
-npx skills add zephexMCP/agent-skills -a codex-cli
-npx skills add zephexMCP/agent-skills -a zed
 ```
+
+> Auto-detects your installed agents (Claude Code, Cursor,
+> VS Code, Windsurf, Cline, OpenCode, Codex, Gemini CLI,
+> Goose, Kiro, Roo, JetBrains, Factory AI, and 40+ more).
 
 ## Prerequisites
 
@@ -42,16 +37,30 @@ npx skills add zephexMCP/agent-skills -a zed
 
 ## Supported Editors
 
-| Editor | Transport | Config |
-|--------|-----------|--------|
-| Claude Code | stdio | .mcp.json |
-| Cursor | HTTP | .cursor/mcp.json |
-| VS Code | HTTP (inputs) | .vscode/mcp.json |
-| Windsurf | HTTP | mcp_config.json |
-| Cline | streamableHttp | Remote Servers |
-| OpenCode | remote/OAuth | opencode.json |
-| Codex CLI | HTTP/TOML | config.toml |
-| Zed | stdio | settings.json |
+Zephex Agent Skills works with 55+ AI coding agents via
+the skills CLI. Key supported editors include:
+
+Claude Code · Cursor · VS Code · Windsurf · Cline ·
+OpenCode · Codex CLI · Gemini CLI · Goose · Kiro CLI ·
+Roo Code · JetBrains (Junie) · Factory AI (Droid) ·
+GitHub Copilot · and 40+ more.
+
+To install for a specific editor only:
+```bash
+npx skills add zephexMCP/agent-skills -a claude-code
+npx skills add zephexMCP/agent-skills -a cursor
+npx skills add zephexMCP/agent-skills -a codex
+npx skills add zephexMCP/agent-skills -a gemini-cli
+npx skills add zephexMCP/agent-skills -a github-copilot
+npx skills add zephexMCP/agent-skills -a goose
+npx skills add zephexMCP/agent-skills -a kiro-cli
+npx skills add zephexMCP/agent-skills -a junie
+npx skills add zephexMCP/agent-skills -a droid
+npx skills add zephexMCP/agent-skills -a roo
+```
+
+Note: Zed does not currently support the skills CLI format.
+For Zed, copy configs/zed.json manually.
 
 ## Common Mistakes
 

@@ -1,4 +1,17 @@
-Zephex tools — per-tool agent reference
+# Zephex tools — per-tool agent reference
+
+## Contents
+
+1. [zephex:scope_task](#1-zephexscope_task)
+2. [zephex:get_project_context](#2-zephexget_project_context)
+3. [zephex:read_code](#3-zephexread_code)
+4. [zephex:find_code](#4-zephexfind_code)
+5. [zephex:explain_architecture](#5-zephexexplain_architecture)
+6. [zephex:check_package](#6-zephexcheck_package)
+7. [zephex:audit_package](#7-zephexaudit_package)
+8. [zephex:audit_headers](#8-zephexaudit_headers)
+9. [zephex:Zephex_dev_info](#9-zephexzephex_dev_info)
+10. [zephex:thinking](#10-zephexthinking)
 
 │ Auth groups, in your existing terminology:
 │ stdio + API key = Claude Code, Zed, Goose, Factory AI
@@ -13,7 +26,7 @@ per-user GitHub OAuth ships.
 
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-1. zephex:scope_task
+## 1. zephex:scope_task
 
 Call when: ALWAYS FIRST, before any non-trivial coding task. Replaces blindly reading 20 files.
 
@@ -86,7 +99,7 @@ All three.
 
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-2. zephex:get_project_context
+## 2. zephex:get_project_context
 
   Call when: Once per session on a new repo, OR when the user mentions "this project / my repo / what's the stack". Replaces reading package.json / pyproject.toml / go.mod / pom.xml /
   Cargo.toml / Gemfile / composer.json / *.csproj / build.gradle(.kts) / pubspec.yaml / Podfile / Package.swift.
@@ -161,7 +174,7 @@ All three.
 
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-  3. zephex:read_code
+## 3. zephex:read_code
 
   Call when: You want a specific symbol or file content, surgically. Don't read whole files when you can extract a function.
 
@@ -285,7 +298,7 @@ All three.
 
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-  4. zephex:find_code
+## 4. zephex:find_code
 
   Call when: You're searching by pattern, not by name. Replaces native Grep / ripgrep / Glob / find. Always call before implementing anything new (search for existing
   utilities first).
@@ -386,7 +399,7 @@ All three.
 
 ---
 
-5. zephex:explain_architecture
+## 5. zephex:explain_architecture
 
   Call when: User asks anything architectural — auth flow, data flow, request tracing, design questions, "how does this work", "where does X happen".
 
@@ -482,7 +495,7 @@ All three.
 
 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-  6. zephex:check_package
+## 6. zephex:check_package
 
   Call when: Before any npm install / pip install / cargo add etc. Verify the package exists, isn't deprecated, isn't typosquatted, doesn't have malicious postinstall
   hooks.
@@ -561,7 +574,7 @@ All three.
 
 ---
 
-7. zephex:audit_package
+## 7. zephex:audit_package
 
   Call when: Upgrading a package, debugging a version conflict, reviewing CVEs, or planning a migration. Deeper than check_package.
 
@@ -647,7 +660,7 @@ All three.
 
 ---
 
-8. zephex:audit_headers
+## 8. zephex:audit_headers
 
   Call when: After every production deploy. Also for compliance reviews (SOC2, PCI, HIPAA), security audits, "is this URL secure", cert-expiry checks, redirect-chain
   audits, CORS / CSP debugging.
@@ -733,7 +746,7 @@ All three.
 
 ---
 
-9. zephex:Zephex_dev_info
+## 9. zephex:Zephex_dev_info
 
   Call when: User asks "how do I do X" with a topic in our knowledge base — Stripe webhooks, Supabase RLS, Convex schemas, CSP/CORS hardening, JWT rotation, AWS ECS deploy
   patterns, Bun runtime, Next.js 16 patterns, Expo / Play Store signing, etc. Two-step lookup: search then get.
@@ -819,7 +832,7 @@ All three.
 
 ---
 
-10. zephex:thinking
+## 10. zephex:thinking
 
   Call when: Hard bugs, multi-system issues, high-risk changes (auth / billing / DB schema / RLS / Stripe webhook refactor / encryption key rotation), planning before
   coding, post-incident root-cause analysis, when you've hit 3+ dead ends.
