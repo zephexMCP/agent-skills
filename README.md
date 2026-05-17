@@ -10,9 +10,9 @@
 npx skills add zephexMCP/agent-skills
 ```
 
-> Auto-detects your installed agents (Claude Code, Cursor,
-> VS Code, Windsurf, Cline, OpenCode, Codex, Gemini CLI,
-> Goose, Kiro, Roo, JetBrains, Factory AI, and 40+ more).
+> Auto-detects Claude Code, Cursor, VS Code, Windsurf,
+> Cline, OpenCode, Codex, Gemini CLI, Goose, Kiro, Roo,
+> JetBrains, Factory AI, and 40+ more editors automatically.
 
 ## Prerequisites
 
@@ -37,30 +37,27 @@ npx skills add zephexMCP/agent-skills
 
 ## Supported Editors
 
-Zephex Agent Skills works with 55+ AI coding agents via
-the skills CLI. Key supported editors include:
+Works with 55+ AI coding agents. Key supported editors:
 
-Claude Code · Cursor · VS Code · Windsurf · Cline ·
-OpenCode · Codex CLI · Gemini CLI · Goose · Kiro CLI ·
-Roo Code · JetBrains (Junie) · Factory AI (Droid) ·
-GitHub Copilot · and 40+ more.
+| Editor | Transport | Config |
+|---|---|---|
+| Claude Code | stdio | .mcp.json |
+| Cursor | HTTP Bearer | .cursor/mcp.json |
+| VS Code | HTTP Bearer | .vscode/mcp.json |
+| Windsurf | HTTP Bearer | mcp_config.json |
+| Cline | streamableHttp | Remote Servers |
+| OpenCode | OAuth | opencode.json |
+| Codex CLI | TOML | ~/.codex/config.toml |
+| Gemini CLI | OAuth | .gemini/settings.json |
+| Goose | stdio | via goose configure |
+| Kiro CLI | OAuth | .kiro/settings/mcp.json |
+| Roo Code | HTTP | Settings panel |
+| JetBrains (Junie) | HTTP | IDE Settings UI |
+| Factory AI (Droid) | stdio | .factory/mcp.json |
 
-To install for a specific editor only:
-```bash
-npx skills add zephexMCP/agent-skills -a claude-code
-npx skills add zephexMCP/agent-skills -a cursor
-npx skills add zephexMCP/agent-skills -a codex
-npx skills add zephexMCP/agent-skills -a gemini-cli
-npx skills add zephexMCP/agent-skills -a github-copilot
-npx skills add zephexMCP/agent-skills -a goose
-npx skills add zephexMCP/agent-skills -a kiro-cli
-npx skills add zephexMCP/agent-skills -a junie
-npx skills add zephexMCP/agent-skills -a droid
-npx skills add zephexMCP/agent-skills -a roo
-```
-
-Note: Zed does not currently support the skills CLI format.
-For Zed, copy configs/zed.json manually.
+> Zed does not currently support the skills CLI.
+> For Zed, copy configs/zed.json manually into your
+> Zed context_servers settings.
 
 ## Common Mistakes
 
