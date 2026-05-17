@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "zephex": {
+      "url": "https://zephex.dev/mcp",
+      "type": "streamableHttp",
+      "disabled": false,
+      "timeout": 60
+    }
+  }
+}

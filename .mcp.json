@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "zephex": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "zephex"],
+      "env": {
+        "ZEPHEX_API_KEY": "mcp_sk_your_key_here"
+      }
+    }
+  }
+}

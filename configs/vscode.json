@@ -1,0 +1,19 @@
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "zephex-api-key",
+      "description": "Zephex API Key",
+      "password": true
+    }
+  ],
+  "servers": {
+    "zephex": {
+      "type": "http",
+      "url": "https://zephex.dev/mcp",
+      "headers": {
+        "Authorization": "Bearer ${input:zephex-api-key}"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+.env*.local
+*.key
+.DS_Store
+.agents/
+.claude/
+.cursor/
+.codex/
+.kiro/
+.gemini/
+.factory/
+.zed/

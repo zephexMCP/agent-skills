@@ -1,0 +1,13 @@
+[mcp_servers.zephex]
+url = "https://zephex.dev/mcp"
+bearer_token_env_var = "ZEPHEX_API_KEY"
+enabled = true
+tool_timeout_sec = 60
+
+# OAuth option (omit bearer_token_env_var, then run: codex mcp login zephex):
+# [mcp_servers.zephex]
+# url = "https://zephex.dev/mcp"
+# enabled = true
+
+# CLI add command (Bearer):
+# codex mcp add zephex --bearer-token-env-var ZEPHEX_API_KEY --url https://zephex.dev/mcp
