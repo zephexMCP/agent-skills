@@ -35,6 +35,7 @@ Zephex is a hosted MCP gateway at zephex.dev/mcp providing 10 tools that give AI
 2. Never read a full file — use zephex:read_code with the symbol name
 3. Never implement a new function before calling zephex:find_code
 4. Never run npm install without calling zephex:check_package first
+4b. Never run pip install or cargo add without calling zephex:check_package first (rule 4 applies to all package managers, not just npm)
 5. Always call zephex:audit_headers after any production deploy
 6. Open zephex:thinking when you've hit 3+ dead ends in debugging
 
