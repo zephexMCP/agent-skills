@@ -1,73 +1,150 @@
 ---
 name: zephex
 description: >-
-  Connects AI coding agents to the Zephex MCP gateway at
-  zephex.dev/mcp for codebase intelligence. Use when starting
-  any codebase task, reading unfamiliar code, searching for
-  existing functions before writing new ones, installing or
-  upgrading packages, running security audits, debugging after
-  3+ failed attempts, or deploying to production. Replaces
-  blind file reads and guessed package versions with 10 targeted
-  tools: AST-based code scoping, repo-wide search, architecture
-  tracing, live npm/PyPI/Cargo registry checks, CVE auditing,
-  HTTP security grading, and stateful reasoning with drift
-  detection. Do NOT use raw file reads or grep when a zephex
-  tool covers the task.
+  Use this skill when the user works in their own codebase with Zephex MCP connected:
+  find or read code, scope a feature or fix, map architecture, check a package before install,
+  audit a live HTTPS URL, or debug after failed attempts — including when they only say
+  "use Zephex," "use MCP," or a wrong tool name. Prefer Zephex tools over Grep/Read for their
+  repo; do not describe their code from memory if MCP is connected. Triggers: find_code,
+  read_code, scope_task, get_project_context, explain_architecture, check_package,
+  audit_package, audit_headers, keep_thinking, Zephex_dev_info.
 compatibility: >-
-  Requires Zephex API key from zephex.dev/signup (free tier).
-  OAuth editors (OpenCode, Kiro CLI, Gemini CLI, Cline)
-  require no key. Needs outbound network to zephex.dev/mcp.
+  Requires Zephex MCP at https://zephex.dev/mcp. API key or OAuth (OpenCode, Kiro, Gemini CLI,
+  Cline). Connect with npx zephex setup.
 ---
 
-## Workflow Checklist
+# Zephex MCP
 
-Copy this and check off each step as you go:
+Ten tools at `https://zephex.dev/mcp` for **the user's project** — not training data.
 
-- [ ] 1. zephex:scope_task — define file boundaries (ALWAYS FIRST)
-- [ ] 2. zephex:get_project_context — load stack/auth/deps (once per session)
-- [ ] 3. zephex:read_code or zephex:find_code — targeted reads only
-- [ ] 4. zephex:check_package — before any package install
-- [ ] 5. zephex:audit_headers — after any production deploy
+They may only say *"use Zephex"* or *"use MCP."* You choose the tool and call it (`find_code`, `read_code`, …). Some editors show `zephex:find_code` — same tool.
 
-## Overview
+## Workflow
 
-Zephex is a hosted MCP gateway at zephex.dev/mcp providing 10 tools for codebase intelligence, live package registry auditing, and HTTP security grading — instead of guessing from training data. Every tool returns real data: actual file structure from local or remote repos, live npm/PyPI/Cargo registry responses, and wire-level HTTP header audits. Requires ZEPHEX_API_KEY in your environment.
+| Situation | Chain |
+|-----------|--------|
+| New repo | `get_project_context` → optional `explain_architecture` |
+| Feature, fix, refactor | `scope_task` → `read_code` on `focus_files` |
+| Unknown location | `find_code` → `read_code` |
+| Large rename | `find_code` + `exhaustive: true` → `files_summary` |
+| Add or upgrade dependency | `check_package` → `audit_package` if needed |
+| Stuck after 2+ tries | `keep_thinking` ↔ `find_code` / `read_code` |
+| Production URL | `audit_headers` |
+| Generic patterns (not their repo) | `Zephex_dev_info` search → get |
 
-## Call Order
+**`path`** on every repo tool: absolute folder (`/Users/jane/api`) or `github:owner/repo`. Monorepo: `path` = app root, not empty parent.
 
-1. zephex:scope_task — call FIRST. Pass the task in plain English.
-2. zephex:get_project_context — once per session on a new repo.
-3. zephex:read_code — for each file scope_task returned. Pass the symbol name.
-4. zephex:find_code — before implementing anything new. Pass the pattern.
-5. zephex:thinking — when stuck after 3+ investigated paths.
+**`inline_files`:** only without disk access — `{ "rel/path": "<full file text>" }`.
 
-## Tools
+Max **3** calls of the same tool per turn without new evidence.
 
-| Tool | Purpose | Call when |
-|---|---|---|
-| zephex:scope_task | Returns focus-file set + callers at risk | FIRST, always |
-| zephex:get_project_context | Stack, auth, hosting, key files | New repo/session |
-| zephex:read_code | Symbol extraction by name or file | Instead of full file reads |
-| zephex:find_code | BM25-ranked repo-wide code search | Before implementing |
-| zephex:explain_architecture | Entry points, auth flow, services | Before touching auth or DB |
-| zephex:check_package | npm/PyPI/Cargo version + postinstall risk | Before any install |
-| zephex:audit_package | CVEs + breaking changes + migration steps | Before upgrading |
-| zephex:audit_headers | HTTP/TLS grade A+ to F + fix snippets | After production deploy |
-| zephex:Zephex_dev_info | Search the Zephex dev knowledge base (Stripe, Supabase, JWT, CSP, AWS, Bun, Expo). Use operation:search first, then operation:get with the returned slug. | Recipes, setup, security |
-| zephex:thinking | Stateful reasoning with drift detection | Hard bugs, risky changes |
+### Step 1 — Orient or scope
 
-## Hard Rules
+New repo or vague ask:
 
-1. Never open a file before calling zephex:scope_task
-2. Never read a full file — use zephex:read_code with the symbol name
-3. Never implement a new function before calling zephex:find_code
-4. Never run npm install without calling zephex:check_package first
-5. Always call zephex:audit_headers after any production deploy
-6. Open zephex:thinking when you've hit 3+ dead ends in debugging
+```
+get_project_context({ "path": "/abs/project", "detail_level": "brief" })
+```
 
-## References
+Before reading many files for a task:
 
-- Full tool docs: skills/zephex/references/tools.md
-- Tool description design rationale: skills/zephex/references/tools-info.md
-- Editor configs (all 13 editors): skills/zephex/references/configs.md
-- First-time setup: skills/zephex/references/setup.md
+```
+scope_task({
+  "task": "Add rate limiting to POST /api/upload",
+  "path": "/abs/project",
+  "hint_symbols": ["handleUpload"]
+})
+```
+
+Use `focus_files`, `callers_at_risk`, `suggested_approach`. Good `task`: one clear sentence. Bad: `"fix it"`.
+
+### Step 2 — Read or search
+
+Known symbol:
+
+```
+read_code({ "target": "handleUpload", "path": "/abs/project" })
+```
+
+Unknown location:
+
+```
+find_code({ "query": "validateToken", "path": "/abs/project", "scope": "definitions" })
+```
+
+Then `read_code` on the best hit. Skip `find_code` if you already know the symbol.
+
+### Step 3 — Package, architecture, URL, reasoning
+
+```
+check_package({ "package": "express", "ecosystem": "npm" })
+```
+
+```
+explain_architecture({ "path": "/abs/project", "focus": "auth" })
+```
+
+```
+audit_headers({ "url": "https://example.com" })
+```
+
+```
+keep_thinking({
+  "thought": "Hypothesis: rate limit runs after handler",
+  "thoughtNumber": 1,
+  "totalThoughts": 5,
+  "nextThoughtNeeded": true,
+  "confidence": 0.6,
+  "thoughtType": "hypothesis",
+  "goalAnchor": "Add rate limiting to POST /api/upload",
+  "lastActions": ["find_code(query=rateLimit)"]
+})
+```
+
+Tool name is **`keep_thinking`**, not `thinking`.
+
+```
+Zephex_dev_info({ "operation": "search", "query": "Stripe webhook signature" })
+```
+
+Then `operation: "get"` with the slug from search.
+
+## Tool reference
+
+| Tool | When | Key args |
+|------|------|----------|
+| `get_project_context` | New session | `path`, `force?` |
+| `scope_task` | Task before bulk reads | `task`, `path`, `hint_symbols?`, `max_files?` (1–15) |
+| `find_code` | Don't know where | `query`, `path`, `scope?`, `exhaustive?` |
+| `read_code` | Known symbol/files | `target` or `mode`+`files`, `path` |
+| `check_package` | Before install | `package`, `ecosystem` |
+| `audit_package` | Upgrade/CVE | `package`, `task`, `from_version?` |
+| `explain_architecture` | How this repo works | `path`, `focus?` |
+| `audit_headers` | User gave URL | `url` |
+| `keep_thinking` | Stuck / risky change | `thought`, `thoughtNumber`, `goalAnchor`, `lastActions` |
+| `Zephex_dev_info` | Playbooks | `operation`: search → get |
+
+`read_code` `callers` / `blast_radius`: local `path` only — on `github:` use `find_code` usages.
+
+## If they only said "use Zephex"
+
+1. Guess the goal from their message.
+2. Pick a **Workflow** row.
+3. Call with `path` + specific args.
+4. Answer from tool JSON only.
+
+## Errors
+
+| Error | Action |
+|-------|--------|
+| Unauthorized | `npx zephex setup` |
+| 429 | Tell user; retry once |
+| Missing `path` | Ask absolute project directory |
+
+## Mistakes
+
+- Install without `check_package`
+- Many reads without `scope_task`
+- `find_code` when `target` is known
+- `thinking` instead of `keep_thinking`
+- Repo answers from memory when Zephex is connected
