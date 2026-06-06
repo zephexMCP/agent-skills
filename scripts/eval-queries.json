@@ -1,0 +1,22 @@
+[
+  { "id": "t01", "should_trigger": true, "query": "Use zephex to find where we validate JWT tokens in this repo" },
+  { "id": "t02", "should_trigger": true, "query": "Scope what files I'd need to touch to add rate limiting to POST /api/upload" },
+  { "id": "t03", "should_trigger": true, "query": "Is the express package safe to add? I'm about to npm install" },
+  { "id": "t04", "should_trigger": true, "query": "Audit security headers on https://myapp.com production" },
+  { "id": "t05", "should_trigger": true, "query": "use MCP — I don't know this codebase yet" },
+  { "id": "t06", "should_trigger": true, "query": "What kind of project is this? package manager and test scripts?" },
+  { "id": "t07", "should_trigger": true, "query": "find_code all usages of handleUpload before I change the signature" },
+  { "id": "t08", "should_trigger": true, "query": "What breaks if we upgrade next from 14 to 15?" },
+  { "id": "t09", "should_trigger": true, "query": "use zephex" },
+  { "id": "t10", "should_trigger": true, "query": "I've tried three fixes for the upload bug and I'm stuck — help me debug" },
+  { "id": "f01", "should_trigger": false, "query": "Write a fibonacci function in Python" },
+  { "id": "f02", "should_trigger": false, "query": "Fix the typo on line 12 of README.md" },
+  { "id": "f03", "should_trigger": false, "query": "What's the weather in Austin today?" },
+  { "id": "f04", "should_trigger": false, "query": "How do I configure Next.js 15 middleware? (generic docs, not my repo)" },
+  { "id": "f05", "should_trigger": false, "query": "Deploy this app to Vercel step by step" },
+  { "id": "f06", "should_trigger": false, "query": "Explain what React useEffect cleanup does in general" },
+  { "id": "f07", "should_trigger": false, "query": "Run bun test and fix any failures" },
+  { "id": "f08", "should_trigger": false, "query": "Edit skills/zephex/SKILL.md to add a new section" },
+  { "id": "f09", "should_trigger": false, "query": "git commit and push my changes" },
+  { "id": "f10", "should_trigger": false, "query": "Convert this JSON file to YAML" }
+]

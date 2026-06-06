@@ -17,23 +17,27 @@ npx skills add zephexMCP/agent-skills
 ## Prerequisites
 
 - **Node.js v18+** (for npx-based editors)
-- **API key** from https://zephex.dev/signup (free tier)
+- **API key** from https://zephex.dev/signup (free tier), or **`npx zephex setup`**
 - **OAuth editors** (OpenCode, Kiro, Gemini CLI, Cline): no key needed
+
+The agent skill is **`skills/zephex/SKILL.md`** (workflow + tool routing). Editor JSON is in **`configs/`** — install with `npx zephex setup` or copy from there.
+
+**Maintainers:** read **[SKILL-MAINTAINER.md](SKILL-MAINTAINER.md)** before editing the skill (structure, mistakes to avoid, ship checklist).
 
 ## The 10 Tools
 
 | Tool | Purpose |
 |------|---------|
-| zephex:scope_task | Min files to read (max 7) — ALWAYS FIRST |
-| zephex:get_project_context | Stack, auth, hosting, key files |
-| zephex:read_code | Symbol extraction + callers |
-| zephex:find_code | Repo-wide search |
-| zephex:explain_architecture | Auth/billing flow tracing |
-| zephex:check_package | npm version + postinstall risk |
-| zephex:audit_package | CVEs + breaking changes |
-| zephex:audit_headers | HTTP/TLS grade A+ to F |
-| zephex:Zephex_dev_info | Search the Zephex dev knowledge base (Stripe, Supabase, JWT, CSP, AWS, Bun, Expo). Use operation:search first, then operation:get with the returned slug. |
-| zephex:thinking | Stateful reasoning |
+| scope_task | Focus files for the task (default 7, up to 15) — use early on non-trivial work |
+| get_project_context | Stack, auth, hosting, key files |
+| read_code | Symbol extraction + callers |
+| find_code | Repo-wide search |
+| explain_architecture | Auth/billing flow tracing |
+| check_package | Registry safety before install |
+| audit_package | CVEs + breaking changes |
+| audit_headers | HTTP/TLS grade A+ to F |
+| Zephex_dev_info | Dev KB — search then get by slug |
+| keep_thinking | Stateful reasoning (not `thinking`) |
 
 ## Supported Editors
 

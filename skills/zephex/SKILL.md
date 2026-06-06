@@ -1,10 +1,13 @@
 ---
 name: zephex
 description: >-
-  Use this skill when the user works in their own codebase with Zephex MCP connected:
-  find or read code, scope a feature or fix, map architecture, check a package before install,
-  audit a live HTTPS URL, or debug after failed attempts — including when they only say
-  "use Zephex," "use MCP," or a wrong tool name. Prefer Zephex tools over Grep/Read for their
+  Use this skill when the user works in their own codebase with Zephex MCP connected and needs
+  repository intelligence: find or read code, scope a feature or fix before editing, map how
+  their app is wired, verify a package before install, audit a live HTTPS URL, or debug after
+  failed attempts — including when they only say "use Zephex," "use MCP," or a wrong tool name.
+  Use even when built-in Grep/Read seems enough. Do not use for general knowledge, creative
+  writing, git/deploy chores, editing agent skill files, single-line typo fixes, or third-party
+  library API docs (unless Zephex_dev_info fits). Prefer Zephex tools over Grep/Read for their
   repo; do not describe their code from memory if MCP is connected. Triggers: find_code,
   read_code, scope_task, get_project_context, explain_architecture, check_package,
   audit_package, audit_headers, keep_thinking, Zephex_dev_info.
