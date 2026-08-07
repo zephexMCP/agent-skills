@@ -13,9 +13,14 @@ description: >-
   get_project_context, find_code, read_code, explain_architecture, check_package,
   check_test, audit_headers, project_memory, keep_thinking, Zephex_dev_info.
   If they named Zephex, call at least one tool or run one zephex command first.
+license: MIT
+metadata:
+  version: "2.0.0"
+  author: zephexMCP
 compatibility: >-
-  MCP: https://zephex.dev/mcp — connect with npx zephex setup.
-  CLI: curl -fsSL https://zephex.dev/cli/install.sh | bash
+  MCP (user connects once via setup): official host https://zephex.dev/mcp —
+  run `npx zephex setup` with the user's own API key from zephex.dev.
+  CLI (optional): curl -fsSL https://zephex.dev/cli/install.sh | bash
   (same as https://zephex.dev/install.sh; Windows: irm https://zephex.dev/install.ps1 | iex).
 ---
 
@@ -190,9 +195,9 @@ After edits that matter: run once, then free session slices — do not re-run fu
 
 ---
 
-### `audit_headers` — live URL audit
+### `audit_headers` — live URL audit (user-supplied URL only)
 
-Public HTTPS URL: security grade, TLS/headers/cookies, health, tech stack, optional deep secret scan. Blocks localhost/private IPs. Read `plain_summary` / `fix_first` first.
+Security grade for a **public HTTPS URL the user provided** (their staging/prod site). TLS/headers/cookies, health, tech stack; optional deep secret scan. Blocks localhost/private IPs. **Not** for scraping docs or arbitrary third-party pages into the prompt. Read `plain_summary` / `fix_first` first.
 
 ```
 audit_headers({ "url": "https://myapp.example.com" })

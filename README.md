@@ -74,22 +74,22 @@ Ground truth: mcpHub `available-tools.ts` + proxy tool schemas.
 
 ### skills.sh page looks stale?
 
-**GitHub `main` is correct** (push worked). [skills.sh](https://www.skills.sh/zephexmcp/agent-skills/zephex) often **caches** Overview / Call Order / Snyk from first index (e.g. May 2026). Known issue: [vercel-labs/skills#919](https://github.com/vercel-labs/skills/issues/919).
+**There is no “publish” button.** skills.sh indexes via install telemetry + cached snapshots. GitHub `main` is the source of truth; the catalog Overview/Snyk can lag for weeks ([#919](https://github.com/vercel-labs/skills/issues/919), [#1273](https://github.com/vercel-labs/skills/issues/1273)).
 
-| Check | URL |
-|-------|-----|
-| Live skill body | https://raw.githubusercontent.com/zephexMCP/agent-skills/main/skills/zephex/SKILL.md |
-| Per-skill overview for directory | [skills/zephex/README.md](./skills/zephex/README.md) |
+| Check | Expected (current product) |
+|-------|----------------------------|
+| [raw SKILL.md](https://raw.githubusercontent.com/zephexMCP/agent-skills/main/skills/zephex/SKILL.md) | Call order starts with `get_project_context` → `find_code`; no `scope_task` / `inspect_url` |
+| [download API](https://skills.sh/api/download/zephexmcp/agent-skills/zephex) | Should match GitHub after reindex (stale if it still lists `references/tools.md`) |
+| [Snyk page](https://www.skills.sh/zephexmcp/agent-skills/zephex/security/snyk) | May still show May 2026 W011 until re-audit |
 
-Install always pulls **GitHub**, not the skills.sh HTML cache:
+Install always clones **GitHub**, not the skills.sh HTML cache:
 
 ```bash
 npx skills add zephexMCP/agent-skills --skill zephex -y
-# later:
 npx skills update zephex -y
 ```
 
-To nudge re-index: empty commit on `main`, or open/comment on vercel-labs/skills with the repo URL.
+Nudge reindex: reinstall via CLI, then if download API stays stale, open an issue on [vercel-labs/skills](https://github.com/vercel-labs/skills/issues).
 
 ## License
 

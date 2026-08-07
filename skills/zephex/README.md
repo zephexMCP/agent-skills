@@ -15,7 +15,7 @@ npx zephex setup
 # API key: https://zephex.dev/dashboard/api-keys
 ```
 
-Endpoint (official, user-authenticated): `https://zephex.dev/mcp`
+Official MCP host (user authenticates with **their** key): `https://zephex.dev/mcp`
 
 ## Install terminal CLI (optional)
 
@@ -60,10 +60,10 @@ Full instructions, args, CLI commands: **[SKILL.md](./SKILL.md)**.
 
 ## Security notes (for auditors)
 
-- Agents call **only** the official MCP host `https://zephex.dev/mcp` with the **user's** API key (or OAuth). The skill does not fetch arbitrary third-party skill documents.
-- `audit_headers` / CLI `check url` run only on a URL the **user** supplies (public HTTPS). Not a general “fetch any webpage into the prompt” tool.
-- Terminal CLI install is opt-in; `npx -y zephex` is the published npm package for stdio MCP when configured by the user.
-- This skill does **not** include tools named `scope_task`, `inspect_url`, `audit_package`, or `thinking`.
+- This skill package ships only `SKILL.md` + this README (no `references/tools.md`, no embedded stdio scripts).
+- MCP: user runs `npx zephex setup` once and connects to the **official** host with **their** API key. The skill does not scrape arbitrary third-party sites into agent context.
+- `audit_headers` / CLI `check url` run only on a **user-supplied** public HTTPS URL (security audit of their site). Not a general “fetch any webpage into the prompt” tool.
+- Removed / never present in current product: `scope_task`, `inspect_url`, `audit_package`, bare `thinking` (use `keep_thinking`).
 
 ## Repo
 
