@@ -122,7 +122,7 @@ Use these when re-validating structure — not to paste into `SKILL.md`.
 30. `github:owner/repo` + `GITHUB_PAT` docs  
 31. `inline_files` transport note (Cursor remote, etc.)  
 32. `keep_thinking` vs deprecated `thinking` naming  
-33. Package tools: `check_package` / `audit_package` split  
+33. Package upgrades use `check_package` task=upgrade|security (one tool)
 34. `Zephex_dev_info` search → get slug flow  
 35. Playwright marketing tests mentioning CLI/MCP (sanity on public messaging)  
 36+. Editor-specific config quirks in `configs/` + README Common Mistakes  

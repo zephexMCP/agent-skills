@@ -67,9 +67,29 @@ zephex learn                       # free catalog
 
 - [SKILL-MAINTAINER.md](./SKILL-MAINTAINER.md) — sync with mcpHub product tools  
 - [TRIGGER-EVAL.md](./TRIGGER-EVAL.md) — description eval  
+- [SECURITY.md](./SECURITY.md) — intentional MCP/CLI surfaces (for auditors)  
 - Before push: `node scripts/eval-description.mjs` (20/20)
 
 Ground truth: mcpHub `available-tools.ts` + proxy tool schemas.
+
+### skills.sh page looks stale?
+
+**GitHub `main` is correct** (push worked). [skills.sh](https://www.skills.sh/zephexmcp/agent-skills/zephex) often **caches** Overview / Call Order / Snyk from first index (e.g. May 2026). Known issue: [vercel-labs/skills#919](https://github.com/vercel-labs/skills/issues/919).
+
+| Check | URL |
+|-------|-----|
+| Live skill body | https://raw.githubusercontent.com/zephexMCP/agent-skills/main/skills/zephex/SKILL.md |
+| Per-skill overview for directory | [skills/zephex/README.md](./skills/zephex/README.md) |
+
+Install always pulls **GitHub**, not the skills.sh HTML cache:
+
+```bash
+npx skills add zephexMCP/agent-skills --skill zephex -y
+# later:
+npx skills update zephex -y
+```
+
+To nudge re-index: empty commit on `main`, or open/comment on vercel-labs/skills with the repo URL.
 
 ## License
 

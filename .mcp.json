@@ -3,9 +3,9 @@
     "zephex": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "zephex"],
+      "args": ["-y", "zephex@latest"],
       "env": {
-        "ZEPHEX_API_KEY": "mcp_sk_your_key_here"
+        "ZEPHEX_API_KEY": "${ZEPHEX_API_KEY}"
       }
     }
   }
