@@ -2,75 +2,75 @@
 
 [![Install on skills.sh](https://skills.sh/b/zephexMCP/agent-skills)](https://skills.sh/zephexMCP/agent-skills)
 
-> Teach your AI coding agent to use Zephex's 10 MCP tools correctly.
+Teach Claude Code, Cursor, and other agents how to use **Zephex MCP** and the **zephex terminal CLI** on the user's own repository.
 
-## Install
+## Install the skill
 
 ```bash
 npx skills add zephexMCP/agent-skills
+# or
+npx skills add https://github.com/zephexmcp/agent-skills --skill zephex
 ```
-
-> Auto-detects Claude Code, Cursor, VS Code, Windsurf,
-> Cline, OpenCode, Codex, Gemini CLI, Goose, Kiro, Roo,
-> JetBrains, Factory AI, and 40+ more editors automatically.
 
 ## Prerequisites
 
-- **Node.js v18+** (for npx-based editors)
-- **API key** from https://zephex.dev/signup (free tier), or **`npx zephex setup`**
-- **OAuth editors** (OpenCode, Kiro, Gemini CLI, Cline): no key needed
+| Need | How |
+|------|-----|
+| MCP in editor | `npx zephex setup` (or copy from `configs/`) |
+| API key | [zephex.dev/dashboard/api-keys](https://zephex.dev/dashboard/api-keys) |
+| Terminal CLI (optional) | `curl -fsSL https://zephex.dev/cli/install.sh \| bash` |
 
-The agent skill is **`skills/zephex/SKILL.md`** (workflow + tool routing). Editor JSON is in **`configs/`** — install with `npx zephex setup` or copy from there.
+`https://zephex.dev/cli/install.sh` and `https://zephex.dev/install.sh` are the **same** installer. Windows: `irm https://zephex.dev/install.ps1 | iex`.
 
-**Maintainers:** read **[SKILL-MAINTAINER.md](SKILL-MAINTAINER.md)** before editing the skill (structure, mistakes to avoid, ship checklist).
+## What ships for agents
 
-## The 10 Tools
+| File | Role |
+|------|------|
+| [`skills/zephex/SKILL.md`](./skills/zephex/SKILL.md) | Full routing: 10 tools + CLI commands |
+| [`AGENTS.md`](./AGENTS.md) | Short session gate |
+| [`CLAUDE.md`](./CLAUDE.md) | Claude Code preferences |
+| `configs/*` | Optional manual MCP templates |
+
+## Ten MCP tools
 
 | Tool | Purpose |
 |------|---------|
-| scope_task | Focus files for the task (default 7, up to 15) — use early on non-trivial work |
-| get_project_context | Stack, auth, hosting, key files |
-| read_code | Symbol extraction + callers |
-| find_code | Repo-wide search |
-| explain_architecture | Auth/billing flow tracing |
-| check_package | Registry safety before install |
-| audit_package | CVEs + breaking changes |
-| audit_headers | HTTP/TLS grade A+ to F |
-| Zephex_dev_info | Dev KB — search then get by slug |
-| keep_thinking | Stateful reasoning (not `thinking`) |
+| `get_project_context` | Framework, scripts, env, monorepo (topic slices) |
+| `find_code` | BM25 + ripgrep search |
+| `read_code` | AST symbol / file / outline |
+| `explain_architecture` | Wiring map + Mermaid-capable deep mode |
+| `check_package` | Registry safety, CVEs, upgrades (12 ecosystems) |
+| `check_test` | Test Pulse — run suite + failure health |
+| `audit_headers` | Live HTTPS URL audit |
+| `project_memory` | Remember / recall project facts |
+| `keep_thinking` | Multi-step reasoning + loop detection |
+| `Zephex_dev_info` | Expert implementation playbooks |
 
-## Supported Editors
+## CLI highlights (Mode 2)
 
-Works with 55+ AI coding agents. Key supported editors:
+```bash
+curl -fsSL https://zephex.dev/cli/install.sh | bash
+cd your-project && zephex login
+zephex deep --json                 # orientation packet for agents
+zephex structure --agent           # free folder map
+zephex architecture --focus auth
+zephex overview
+zephex find "auth middleware"
+zephex test                        # run suite
+zephex check test failures         # after test
+zephex check test fix-prompt --copy
+zephex safe lodash
+zephex learn                       # free catalog
+```
 
-| Editor | Transport | Config |
-|---|---|---|
-| Claude Code | stdio | .mcp.json |
-| Cursor | HTTP Bearer | .cursor/mcp.json |
-| VS Code | HTTP Bearer | .vscode/mcp.json |
-| Windsurf | HTTP Bearer | mcp_config.json |
-| Cline | streamableHttp | Remote Servers |
-| OpenCode | OAuth | opencode.json |
-| Codex CLI | TOML | ~/.codex/config.toml |
-| Gemini CLI | OAuth | .gemini/settings.json |
-| Goose | stdio | via goose configure |
-| Kiro CLI | OAuth | .kiro/settings/mcp.json |
-| Roo Code | HTTP | Settings panel |
-| JetBrains (Junie) | HTTP | IDE Settings UI |
-| Factory AI (Droid) | stdio | .factory/mcp.json |
+## Maintainers
 
-> Zed does not currently support the skills CLI.
-> For Zed, copy configs/zed.json manually into your
-> Zed context_servers settings.
+- [SKILL-MAINTAINER.md](./SKILL-MAINTAINER.md) — sync with mcpHub product tools  
+- [TRIGGER-EVAL.md](./TRIGGER-EVAL.md) — description eval  
+- Before push: `node scripts/eval-description.mjs` (20/20)
 
-## Common Mistakes
-
-- VS Code: "mcpServers" → must be "servers"
-- Windsurf: "url" → must be "serverUrl"
-- Cline: "sse" → must be "streamableHttp"
-- OpenCode: Authorization header → remove it
-- Codex CLI: missing enabled=true
+Ground truth: mcpHub `available-tools.ts` + proxy tool schemas.
 
 ## License
 
-MIT
+See [LICENSE](LICENSE).

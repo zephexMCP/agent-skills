@@ -41,7 +41,7 @@ function predictTrigger(query) {
 
   const trigger =
     /\b(use zephex|use mcp)\b/.test(q) ||
-    /\b(find_code|scope_task|check_package|audit_headers|keep_thinking)\b/.test(q) ||
+    /\b(find_code|check_package|audit_headers|keep_thinking|check_test|read_code)\b/.test(q) ||
     /\b(find where|scope what files|what kind of project|security headers on https)\b/.test(q) ||
     /\b(codebase|this repo|npm install|upgrade next|stuck|debug)\b/.test(q) ||
     (/validate jwt/.test(q) && /repo/.test(q)) ||
