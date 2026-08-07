@@ -15,7 +15,7 @@ description: >-
   If they named Zephex, call at least one tool or run one zephex command first.
 license: MIT
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   author: zephexMCP
 compatibility: >-
   MCP (user connects once via setup): official host https://zephex.dev/mcp —
@@ -26,20 +26,64 @@ compatibility: >-
 
 # Zephex — MCP + CLI for the user's project
 
-Zephex analyzes **their codebase and live URLs** — not training data.
+Zephex analyzes **their codebase and live URLs** — not training data. Same account + credits for **MCP** (editor tools) and **CLI** (terminal Mode 2).
 
 | Surface | When | How |
 |---------|------|-----|
 | **MCP (editor)** | Zephex connected in Claude Code, Cursor, VS Code, … | Call tools by name (`find_code`, …) with `path` |
 | **CLI (terminal)** | User in a shell, wants human output, free layout, or `deep --json` | Install CLI → `cd` project → `zephex <cmd>` |
 
-Editors may show `zephex:find_code` — same as `find_code`. Same account and credits for both surfaces.
+Editors may show `zephex:find_code` — same as `find_code`.
 
 **Rule:** Prefer MCP in chat when connected (structured JSON, no shell). Prefer CLI when the user asks for terminal Mode 2, needs a free folder map, or wants the orientation packet. Max **3** identical tool calls per turn without new evidence. Always answer from tool/CLI output for claims about their repo.
 
+**Removed tools (do not call):** `scope_task`, `inspect_url`, `audit_package`, bare `thinking`. Use the table below instead.
+
 ---
 
-## Workflow
+## Overview
+
+Hosted MCP gateway + optional terminal CLI for the **user's own repo**. One product at [zephex.dev](https://zephex.dev). Requires the user's `ZEPHEX_API_KEY` (or OAuth) after `npx zephex setup` / `zephex login`.
+
+## Call order
+
+1. `get_project_context` — first on a new / unknown repo (topics `identity` then `run`)
+2. `find_code` — when location is unknown
+3. `read_code` — known symbol or paths from search
+4. `explain_architecture` — cross-cutting wiring (auth, billing, API)
+5. `check_package` — before any install / upgrade
+6. `check_test` — after edits (`run`, then free `failures` / `fix_prompt` on `session_id`)
+7. `keep_thinking` — only if stuck after 2+ failed attempts
+8. `audit_headers` — only for a **user-supplied** public HTTPS URL
+9. `project_memory` — remember/recall facts across sessions
+10. `Zephex_dev_info` — standard playbooks (not their private code)
+
+```text
+get_project_context → find_code → read_code → [implement] → check_test
+         ↘ explain_architecture (cross-cutting)
+              keep_thinking (if stuck)
+```
+
+CLI shortcut for orientation: `zephex deep --json` (same brain; optional free `structure --agent`).
+
+## All 10 tools
+
+| Tool | What it does | Call when | Credits (hosted) |
+|------|----------------|-----------|------------------|
+| `get_project_context` | Stack, scripts, auth, env, monorepo (one topic/call) | New repo / session | ~7 |
+| `find_code` | BM25 + ripgrep search (intent: snippet/symbol/concept/everywhere) | Location unknown | ~5 |
+| `read_code` | AST symbol / file batch / outline / local call-graph modes | Known symbol or paths | ~5 |
+| `explain_architecture` | Wiring map; deep adds flows + Mermaid | Before auth/API/DB edits | ~7 |
+| `check_package` | Registry safety, CVEs, upgrades (12 ecosystems; tasks) | Before install/bump | ~5 |
+| `check_test` | Test Pulse: run suite + failure health / fix prompt | After code edits | ~1 run; slices free |
+| `audit_headers` | Live HTTPS security grade for **user's** URL | User pastes staging/prod URL | ~5 |
+| `project_memory` | Remember / recall project facts | Across sessions | ~1–3 |
+| `keep_thinking` | Multi-step reasoning + loop detection | Stuck / high blast radius | ~1–3 |
+| `Zephex_dev_info` | Expert playbooks (Stripe, RLS, CSP, …) | Generic patterns, not their repo | ~3–5 |
+
+**Not tools (do not invent):** `scope_task`, `inspect_url`, `audit_package`, `thinking`. Package upgrades use `check_package` with `task: "upgrade"`. Stuck debug uses `keep_thinking`.
+
+## Workflow (MCP + CLI)
 
 | User needs | MCP | CLI (after install + `cd` project) |
 |------------|-----|-------------------------------------|
@@ -63,7 +107,7 @@ Editors may show `zephex:find_code` — same as `find_code`. Same account and cr
 
 ---
 
-## The ten MCP tools
+## The ten MCP tools (detail)
 
 ### `get_project_context` — project snapshot (start here on a new repo)
 
