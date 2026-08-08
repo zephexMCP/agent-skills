@@ -33,6 +33,9 @@ npx skills add https://github.com/zephexmcp/agent-skills --skill zephex
 
 ## Ten MCP tools
 
+Deep public catalog (examples + CLI map): **[zephex-tools](https://github.com/zephexMCP/zephex-tools)** · On-site: [docs/tools](https://zephex.dev/docs/tools)
+
+
 | Tool | Purpose |
 |------|---------|
 | `get_project_context` | Framework, scripts, env, monorepo (topic slices) |
@@ -94,3 +97,13 @@ Nudge reindex: reinstall via CLI, then if download API stays stale, open an issu
 ## License
 
 See [LICENSE](LICENSE).
+
+## Related discovery repos
+
+| Repo | Role |
+|------|------|
+| [zephex-MCPs](https://github.com/zephexMCP/zephex-MCPs) | Product overview |
+| [zephex-tools](https://github.com/zephexMCP/zephex-tools) | Ten tools deep catalog |
+| [zephex-cli](https://github.com/zephexMCP/zephex-cli) | Mode 2 CLI |
+| [zephex-web-terminal](https://github.com/zephexMCP/zephex-web-terminal) | Browser terminal |
+| [llms.txt](https://zephex.dev/llms.txt) | Agent product truth |
