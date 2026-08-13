@@ -15,7 +15,7 @@ description: >-
   If they named Zephex, call at least one tool or run one zephex command first.
 license: MIT
 metadata:
-  version: "2.2.0"
+  version: "2.2.1"
   author: zephexMCP
 compatibility: >-
   MCP (user connects once via setup): official host https://zephex.dev/mcp —
@@ -26,18 +26,23 @@ compatibility: >-
 
 # Zephex — MCP + CLI for the user's project
 
-Zephex analyzes **their codebase and live URLs** — not training data. Same account + credits for **MCP** (editor tools) and **CLI** (terminal Mode 2).
+Zephex is **codebase intelligence for the user's own repo** (not training data, not library docs). One account, one credit pool, **ten tools**, three ways to run them:
 
 | Surface | When | How |
 |---------|------|-----|
-| **MCP (editor)** | Zephex connected | Call tools by name with `path` |
-| **CLI (terminal)** | Shell, JSON pack, or free layout | `cd` project → `zephex <cmd>` |
+| **Mode 1 · Editor MCP** | Agent in Cursor / Claude Code / VS Code / … | Call tools by name (`find_code`, …) with `path` |
+| **Mode 2 · Terminal CLI** | Human or agent in a real shell; JSON pack; free layout | `cd` their project → `zephex <command>` |
+| **Web terminal** | Browser demo, no install, public GitHub | dashboard terminal — same command words as CLI |
 
-Editors may show `zephex:find_code` — same as `find_code`.
+Same backend. `zephex:find_code` is the same as `find_code`. CLI `zephex find` is the same brain as MCP `find_code`. If you do not know which **command** to type, use the CLI map below — do not invent flags.
 
-**Rule:** Prefer MCP when connected. Prefer CLI for Mode 2, free `structure`, or `zephex deep --json`. Max **3** identical tool calls per turn without new evidence. Answer from tool/CLI output for claims about their repo.
+If they asked you to use Zephex, you MUST call at least one Zephex tool (or one `zephex` command on their tree) before answering about their code. Do not call the same tool more than **3 times** per turn without new evidence.
+
+**Prefer MCP** when connected. **Prefer CLI** for Mode 2, free `structure` / `env`, or `zephex deep --json`.
 
 **Removed — never call:** `scope_task`, `inspect_url`, `audit_package`, bare `thinking`.
+
+---
 
 ## Workflow
 
@@ -310,28 +315,146 @@ CLI: `zephex docs "…"` · `ask "…"`.
 
 ---
 
-## Terminal CLI — Mode 2
+## Terminal CLI — Mode 2 (full command map)
+
+If the CLI is not installed, **do not invent** output — use MCP or tell them to install.
 
 ```bash
-curl -fsSL https://zephex.dev/install.sh | bash   # Mac/Linux
+# Mac / Linux (both URLs are the same installer)
+curl -fsSL https://zephex.dev/cli/install.sh | bash
+curl -fsSL https://zephex.dev/install.sh | bash
 # Windows: irm https://zephex.dev/install.ps1 | iex
 
-cd /path/to/their-project
-zephex login
-zephex deep --json                 # agent packet schema_version: 1
-zephex overview
-zephex structure --agent           # 0 credits
-zephex architecture --focus auth
-zephex find "auth"
-zephex test && zephex check test failures
-zephex safe lodash
-zephex learn                       # free catalog
+cd /path/to/their-project          # always — CLI uses cwd
+zephex login                       # browser OAuth or paste API key
+zephex                             # interactive TUI — type /
+zephex learn                       # free catalog of every command (0 credits)
+zephex agent                       # MCP vs CLI cheat sheet (free)
+zephex doctor                      # key + network + editor wiring
 ```
 
-If CLI is not installed, **do not invent** CLI output — use MCP or tell them to install.
+### Which CLI command = which MCP tool
 
-**Deep `--json`:** open `likely_touch[0..2]`, follow `plan` / `next_commands`.  
-**No test session:** run `zephex test` before `check test failures`.
+| You type | Same as MCP | Use it when |
+|----------|-------------|-------------|
+| `zephex overview` / `get-context` / `stack` | `get_project_context` | “What is this app? How do I run it?” |
+| `zephex deep` / `dossier` / `know` | context + architecture (+ find if you pass a task) | First serious session; “where do I start for *this* task?” |
+| `zephex structure` | *(CLI only, 0 credits)* | Folder / language map — not wiring |
+| `zephex architecture` / `arch` | `explain_architecture` | “How does auth / API wire?” |
+| `zephex find` / `find-code` / `defs` / `rename` / `paste` | `find_code` | Location unknown |
+| `zephex read` / `summarize` / `outline` / `symbol` / `files` | `read_code` | Path or symbol known |
+| `zephex safe` / `check-package` | `check_package` | Before install or bump |
+| `zephex test` / `check test` | `check_test` | After edits |
+| `zephex check url` / `site` | `audit_headers` | They pasted a live HTTPS URL |
+| `zephex remember` / `recall` | `project_memory` | Facts across sessions |
+| `zephex think` / `reason` | `keep_thinking` | Stuck (CLI is one-shot) |
+| `zephex docs` / `ask` | `Zephex_dev_info` | Generic playbooks, not their files |
+
+### Four orientation commands (do not swap them)
+
+| Command | Question it answers | Credits |
+|---------|---------------------|---------|
+| `overview` | What *is* this product? Stack? How do I run it? | ~7 |
+| `structure` | What folders exist? Language mix? | **0** |
+| `architecture` | How does control/auth/data *wire*? | ~7 |
+| `deep` | Full dossier + optional task: where to touch? | multi (~14+) |
+
+```bash
+# overview — product brief
+zephex overview
+zephex overview --json
+zephex overview --full
+zephex overview --force              # bust cache
+zephex overview --cwd apps/web
+zephex overview github:owner/repo
+
+# structure — free layout (NOT architecture)
+zephex structure
+zephex structure --agent             # FACTS / NEXT / GAPS for agents
+zephex structure --focus src --depth 4
+zephex structure --json
+
+# architecture — wiring
+zephex architecture
+zephex arch --focus auth
+zephex architecture --focus api --mode deep
+zephex architecture --mode audit --subpath apps/api
+zephex architecture --agent
+zephex architecture --json
+
+# deep — orientation packet (not a separate MCP tool)
+zephex deep
+zephex deep "add rate limiting to upload"
+zephex deep --json                   # schema_version: 1 — agents start here
+zephex deep "fix auth" --json -o .zephex/deep.json
+zephex deep --full
+zephex deep --cwd apps/web "add dark mode"
+zephex deep github:owner/repo
+# aliases: dossier · know
+```
+
+**After `deep --json`:** open `likely_touch[0..2]`, follow `plan[]` and `next_commands`, use `run` for dev/test/build. If `honesty` says the wrong monorepo package was indexed, re-run with `--cwd`. Do not spam `deep` every turn.
+
+### Search, read, packages, site, memory
+
+```bash
+zephex find "AuthError"
+zephex find encrypt --also cipher,E2E
+zephex defs Symbol
+zephex rename OldName
+zephex paste 'export async function foo('
+zephex read path/to/file.ts
+zephex summarize a.ts b.ts
+zephex outline src/handlers/auth.ts
+zephex symbol Name                   # can 0-match after find — prefer read <path>
+zephex who validateToken
+
+zephex safe lodash
+zephex check-package next --task upgrade --from-version 14
+zephex deps
+zephex env                           # .env vs .env.example — free local
+
+zephex check url https://example.com
+zephex site https://example.com
+# never: site --fast
+
+zephex remember "auth uses cookie JWT"
+zephex recall auth
+zephex memory list                   # not: memory recall
+```
+
+### Test Pulse loop (must keep this order)
+
+```bash
+zephex check test --dry-run          # 0 credits — which runner
+zephex check test missing            # 0 credits — sources without tests
+zephex test                          # ~1 credit; creates session_id
+zephex check test failures           # free; needs that session
+zephex check test fix-prompt --copy
+zephex check test status
+```
+
+If you see `No recent test session` → run `zephex test` first, then `failures`.
+
+### Interactive TUI (`zephex` with no args)
+
+Type `/` then: `/overview` · `/deep` · `/structure` · `/architecture` · `/find` · `/test` · `/failures` · `/safe` · `/learn` · `/doctor` · `/usage` · `/quit`.
+
+Enter runs. After output, Enter returns to the TUI. Ctrl+C cancels.
+
+### Free discovery (no analysis credits)
+
+`zephex learn` · `learn deep` · `learn architecture` · `learn find_code` · `cli-guide tools` · `cli-guide agent` · `cli-guide project` · `check test learn`
+
+### Setup / account (no analysis credits)
+
+`zephex setup` · `login` · `logout` · `connect --cursor` (or `--claude` / `--vscode` / `--codex` / …) · `doctor` · `status` · `reconnect` · `repair` · `usage` · `update` · `uninstall`
+
+### Shared flags
+
+`--json` (parse the **last** JSON object; progress lines may print first) · `--cwd <pkg>` · `--path github:owner/repo` · `--no-local` · `--api-key` · `-q` · `--force` (context cache).
+
+Monorepo: CLI auto-picks the densest package under `src`/`app`/`lib`. Wrong tree → `cd apps/web` or `--cwd`.
 
 ---
 
