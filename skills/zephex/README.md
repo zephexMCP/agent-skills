@@ -25,7 +25,7 @@ curl -fsSL https://zephex.dev/cli/install.sh | bash
 # Windows: irm https://zephex.dev/install.ps1 | iex
 ```
 
-## Call order (current product · v2.1.0)
+## Call order (current product · v2.2.0)
 
 ```text
 get_project_context → find_code → read_code → [implement] → check_test

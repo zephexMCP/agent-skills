@@ -15,7 +15,7 @@ description: >-
   If they named Zephex, call at least one tool or run one zephex command first.
 license: MIT
 metadata:
-  version: "2.1.0"
+  version: "2.2.0"
   author: zephexMCP
 compatibility: >-
   MCP (user connects once via setup): official host https://zephex.dev/mcp —
@@ -30,114 +30,80 @@ Zephex analyzes **their codebase and live URLs** — not training data. Same acc
 
 | Surface | When | How |
 |---------|------|-----|
-| **MCP (editor)** | Zephex connected in Claude Code, Cursor, VS Code, … | Call tools by name (`find_code`, …) with `path` |
-| **CLI (terminal)** | User in a shell, wants human output, free layout, or `deep --json` | Install CLI → `cd` project → `zephex <cmd>` |
+| **MCP (editor)** | Zephex connected | Call tools by name with `path` |
+| **CLI (terminal)** | Shell, JSON pack, or free layout | `cd` project → `zephex <cmd>` |
 
 Editors may show `zephex:find_code` — same as `find_code`.
 
-**Rule:** Prefer MCP in chat when connected (structured JSON, no shell). Prefer CLI when the user asks for terminal Mode 2, needs a free folder map, or wants the orientation packet. Max **3** identical tool calls per turn without new evidence. Always answer from tool/CLI output for claims about their repo.
+**Rule:** Prefer MCP when connected. Prefer CLI for Mode 2, free `structure`, or `zephex deep --json`. Max **3** identical tool calls per turn without new evidence. Answer from tool/CLI output for claims about their repo.
 
-**Removed tools (do not call):** `scope_task`, `inspect_url`, `audit_package`, bare `thinking`. Use the table below instead.
+**Removed — never call:** `scope_task`, `inspect_url`, `audit_package`, bare `thinking`.
 
----
+## Workflow
 
-## Overview
+| Situation | MCP | CLI (`cd` project first) |
+|-----------|-----|---------------------------|
+| New / unfamiliar repo | `get_project_context` topic `identity` then `run` | `zephex deep --json` or `overview` |
+| "What is this app?" | `get_project_context` | `zephex overview` / `overview --json` |
+| Folder layout only | — | `zephex structure --agent` (**0 credits**) |
+| How it is wired / auth | `explain_architecture` | `zephex architecture` · `arch --focus auth` |
+| Task orientation | find + architecture | `zephex deep "the task"` |
+| Unknown location | `find_code` → `read_code` | `zephex find "…"` → `read` path |
+| Large rename | `find_code` intent `everywhere` | `zephex rename Name` |
+| Add / bump a package | `check_package` (task check then upgrade/security/migrate) | `zephex safe pkg` |
+| After edits / tests | `check_test` task `run`, then failures on session | `zephex test` then `check test failures` |
+| Live URL they pasted | `audit_headers` | `zephex check url https://…` |
+| Remember a decision | `project_memory` | `zephex remember` / `recall` |
+| Stuck after 2+ fails | `keep_thinking` | `zephex think "…"` (one-shot) |
+| Generic playbook (not their repo) | `Zephex_dev_info` | `zephex docs "…"` |
 
-Hosted MCP gateway + optional terminal CLI for the **user's own repo**. One product at [zephex.dev](https://zephex.dev). Requires the user's `ZEPHEX_API_KEY` (or OAuth) after `npx zephex setup` / `zephex login`.
+You MUST call `check_test` (or `zephex test`) after substantive edits when they care about green tests. You MUST call `check_package` (or `zephex safe`) before recommending install.
 
-## Call order
+**`path`:** absolute project dir, or public `github:owner/repo` / GitHub URL. Monorepo: pass the **app package** root (or CLI `--cwd`).
 
-1. `get_project_context` — first on a new / unknown repo (topics `identity` then `run`)
-2. `find_code` — when location is unknown
-3. `read_code` — known symbol or paths from search
-4. `explain_architecture` — cross-cutting wiring (auth, billing, API)
-5. `check_package` — before any install / upgrade
-6. `check_test` — after edits (`run`, then free `failures` / `fix_prompt` on `session_id`)
-7. `keep_thinking` — only if stuck after 2+ failed attempts
-8. `audit_headers` — only for a **user-supplied** public HTTPS URL
-9. `project_memory` — remember/recall facts across sessions
-10. `Zephex_dev_info` — standard playbooks (not their private code)
-
-```text
-get_project_context → find_code → read_code → [implement] → check_test
-         ↘ explain_architecture (cross-cutting)
-              keep_thinking (if stuck)
-```
-
-CLI shortcut for orientation: `zephex deep --json` (same brain; optional free `structure --agent`).
-
-## All 10 tools
-
-| Tool | What it does | Call when | Credits (hosted) |
-|------|----------------|-----------|------------------|
-| `get_project_context` | Stack, scripts, auth, env, monorepo (one topic/call) | New repo / session | ~7 |
-| `find_code` | BM25 + ripgrep search (intent: snippet/symbol/concept/everywhere) | Location unknown | ~5 |
-| `read_code` | AST symbol / file batch / outline / local call-graph modes | Known symbol or paths | ~5 |
-| `explain_architecture` | Wiring map; deep adds flows + Mermaid | Before auth/API/DB edits | ~7 |
-| `check_package` | Registry safety, CVEs, upgrades (12 ecosystems; tasks) | Before install/bump | ~5 |
-| `check_test` | Test Pulse: run suite + failure health / fix prompt | After code edits | ~1 run; slices free |
-| `audit_headers` | Live HTTPS security grade for **user's** URL | User pastes staging/prod URL | ~5 |
-| `project_memory` | Remember / recall project facts | Across sessions | ~1–3 |
-| `keep_thinking` | Multi-step reasoning + loop detection | Stuck / high blast radius | ~1–3 |
-| `Zephex_dev_info` | Expert playbooks (Stripe, RLS, CSP, …) | Generic patterns, not their repo | ~3–5 |
-
-**Not tools (do not invent):** `scope_task`, `inspect_url`, `audit_package`, `thinking`. Package upgrades use `check_package` with `task: "upgrade"`. Stuck debug uses `keep_thinking`.
-
-## Workflow (MCP + CLI)
-
-| User needs | MCP | CLI (after install + `cd` project) |
-|------------|-----|-------------------------------------|
-| New / unknown repo | `get_project_context` topic `identity` then `run` | `zephex deep --json` or `overview --json` |
-| Folder / language map only | — | `structure --agent` (**0 credits**) |
-| How auth / APIs wire | `explain_architecture` | `architecture` · `--focus auth` |
-| Where to start a task | find + architecture | `deep "add rate limiting"` |
-| Search code | `find_code` | `find` · `defs` · `rename` · `paste` |
-| Read symbol or files | `read_code` | `read` · `summarize` · `outline` · `symbol` |
-| Before install / upgrade | `check_package` | `safe <pkg>` · `check-package … --task upgrade` |
-| After code edits | `check_test` task `run` | `test` then `check test failures` |
-| Missing tests? | `check_test` task `missing` | `check test missing` |
-| Live site security | `audit_headers` | `check url https://…` · `site https://…` |
-| Remember a decision | `project_memory` | `remember "…"` · `recall query` |
-| Multi-step stuck debug | `keep_thinking` | `think "…"` (one-shot) |
-| Generic patterns (not their repo) | `Zephex_dev_info` | `docs "…"` |
-
-**`path`:** absolute project directory, or public `github:owner/repo` / GitHub URL. Monorepo: pass the **app package** root, or CLI `--cwd apps/web` (CLI can auto-pick densest package under `src`/`app`/`lib`).
-
-**`inline_files`:** only when no disk — `{ "src/a.ts": "<full file body>" }` (full contents, not paths).
+**`inline_files`:** `{ "src/a.ts": "<full file body>" }` only when there is no disk.
 
 ---
 
-## The ten MCP tools (detail)
+## Tool: `get_project_context`
 
-### `get_project_context` — project snapshot (start here on a new repo)
+**What it does:** Reads manifests (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, …) and returns **one topic slice** — stack, scripts, auth, deploy — not file bodies.
 
-Reads manifests (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, …) and returns **one topic slice per call**: stack, scripts, auth, database, deploy, env signals, monorepo layout, key paths. Cached; `force: true` refreshes.
+**Call when:** First look at a repo; “what is this?”; you need run/test commands.
 
-**Topics:** `identity` · `run` · `framework` · `backend` · `frontend` · `database` · `auth` · `deploy` · `structure` · `integrations` · `security`
+**DO NOT call when:** You already know the file (`read_code`) or you are hunting a symbol (`find_code`).
+
+**Example — user: “what stack is this?”**
 
 ```
 get_project_context({ "path": "/abs/project", "topic": "identity" })
 get_project_context({ "path": "/abs/project", "topic": "run" })
-get_project_context({ "path": "/abs/project", "topic": "auth", "force": true })
 ```
 
-**Returns:** `summary`, `data.key_paths`, `hint`, `related_topics`, `next_calls`.  
-**Use for:** first orientation; inventing install/test commands.  
-**Not for:** symbol search or file bodies.  
-**Credits:** ~7 hosted on success.
+**After it returns:** Use `data.key_paths` and `summary` as truth. Follow `related_topics` / `next_calls`. Do not invent scripts from memory.
+
+Topics: `identity` · `run` · `framework` · `backend` · `frontend` · `database` · `auth` · `deploy` · `structure` · `integrations` · `security`. Cached; `force: true` refreshes. ~7 credits.
+
+CLI: `zephex overview` · `overview --json` · `get-context --topic run`.
 
 ---
 
-### `find_code` — search when location is unknown
+## Tool: `find_code`
 
-Ripgrep + BM25 ranking + AST-aware blocks. Pick **intent**, not a pile of random flags.
+**What it does:** Ripgrep + **BM25** ranking + AST blocks. Search when you do **not** know the path.
 
-| intent | When |
-|--------|------|
+| intent | Example |
+|--------|---------|
 | `snippet` | User pasted a line from the editor |
-| `symbol` | Known name (`validateToken`) |
-| `concept` | Topic hunt; add `also_try` synonyms |
-| `everywhere` | Rename map; add `whole_word: true` |
+| `symbol` | Known name `validateToken` |
+| `concept` | “rate limit” + `also_try` synonyms |
+| `everywhere` | Rename map; set `whole_word: true` |
+
+**Call when:** Location unknown.
+
+**DO NOT call when:** Path + symbol already known → `read_code`.
+
+**Example — user: “where is upload rate limiting?”**
 
 ```
 find_code({ "query": "validateToken", "path": "/abs/project", "intent": "symbol" })
@@ -155,77 +121,87 @@ find_code({
 })
 ```
 
-**Returns:** `matches` / `files_hit` / `files_summary`, `next_calls`.  
-**Next:** `read_code` on top hits.  
-**Credits:** ~5 hosted.
+**After it returns:** `read_code` the top hit in `files_hit` / `next_calls`. Do not open the whole repo.
+
+CLI: `zephex find "rate limit"` · `defs` · `rename` · `paste`.
 
 ---
 
-### `read_code` — surgical read (not whole-repo search)
+## Tool: `read_code`
 
-AST extract with token budget. Modes: `symbol` · `file` (batch 1–20 paths) · `outline` (TOC for large files) · `scan` · `smell` · `callers` / `blast_radius` / `dead_code` (local disk index only).
+**What it does:** Surgical AST read — symbol, file batch (1–20), outline, scan, smell. Local-disk only: `callers` / `blast_radius` / `dead_code`.
+
+**Call when:** You have a path or symbol from `find_code`.
+
+**DO NOT call when:** Location unknown. Files under ~50 lines → editor Read is fine.
+
+**Example — user: “show me handleUpload”**
 
 ```
 read_code({ "target": "handleUpload", "path": "/abs/project", "detail_level": "context" })
-read_code({ "mode": "file", "path": "/abs/project", "files": ["src/a.ts", "src/b.ts"] })
+read_code({ "mode": "file", "path": "/abs/project", "files": ["src/routes/upload.ts"] })
 read_code({ "mode": "outline", "path": "/abs/project", "files": ["src/handlers/auth.ts"] })
 ```
 
-**Use for:** known symbol or paths from `find_code`. Outline before opening 300+ line files.  
-**Not for:** unknown location (use `find_code` first). Files under ~50 lines → editor Read is fine.  
-**Credits:** ~5 hosted.
+**After it returns:** Edit from the returned body/signature. Outline first on 300+ line files.
+
+CLI: `read` · `summarize` · `outline` · `symbol`. After `find`, prefer `read <path>` — bare `symbol Name` can return 0 matches.
 
 ---
 
-### `explain_architecture` — how modules wire
+## Tool: `explain_architecture`
 
-Structural map: entry points, auth flow, integrations, layers, import edges. Optional Mermaid / request flows in `mode: "deep"`. Pass `concern` (any subsystem label) or `seed_files` from search. Monorepo: `subpath`.
+**What it does:** Wiring map — entry points, auth flow, integrations, layers. `mode: deep` adds request flows + Mermaid. `concern` is any subsystem name.
+
+**Call when:** Cross-cutting change (auth, billing, API); “how does X work?”
+
+**DO NOT call when:** Stack only (`get_project_context`) or one file body (`read_code`) or folder list (CLI `structure`).
+
+**Example — user: “how does auth work here?”**
 
 ```
 explain_architecture({ "path": "/abs/project", "focus": "auth" })
 explain_architecture({ "path": "/abs/project", "mode": "deep", "focus": "api" })
 explain_architecture({ "path": "/abs/project", "concern": "billing" })
-explain_architecture({ "path": "/abs/project", "mode": "audit", "subpath": "apps/api" })
 ```
 
-**focus:** `api` · `auth` · `integrations` · `database` · `security` · `full` (and related).  
-**Returns:** entry points, auth, services, edit-first files, `next_calls`.  
-**Next:** `read_code` on those paths.  
-**Credits:** ~7 hosted.
+**After it returns:** `read_code` on `entry_points` / edit-first files. Then implement.
+
+CLI: `zephex architecture` · `arch --focus auth --mode deep`.
 
 ---
 
-### `check_package` — before any install or bump
+## Tool: `check_package`
 
-Live registry across **12 ecosystems** (npm, PyPI, Cargo, Maven, NuGet, …). One tool, multiple **tasks** — not separate package tools.
+**What it does:** Live registry check across 12 ecosystems. One tool, tasks `check` | `upgrade` | `security` | `migrate` | `debug` — not a second package tool.
 
-| task | Purpose |
-|------|---------|
-| `check` | Exists? Slopsquat? Quick risk (default) |
-| `upgrade` / `migrate` | Breaking changes, migration steps, code examples |
-| `security` | CVE / GHSA focus for a version |
-| `debug` | Advisories + release detail |
+**Call when:** Before any install, bump, or “is this package safe?”
+
+**DO NOT call when:** Searching their code or running tests.
+
+**Example — user: “add lodash” / “upgrade Next from 14”**
 
 ```
-check_package({ "package": "express", "task": "check" })
+check_package({ "package": "lodash", "task": "check" })
 check_package({ "package": "next", "task": "upgrade", "from_version": "14.2.0" })
 check_package({ "package": "prisma", "task": "security", "version": "6.0.0" })
 ```
 
-**MUST** before recommending `npm install` / `pip install` / `cargo add`. If `exists: false`, do not install.  
-**Credits:** ~5 hosted.
+**After it returns:** If `exists: false`, do **not** install. Use `breaking_changes` before writing a bump.
+
+CLI: `zephex safe lodash` · `check-package next --task upgrade --from-version 14`.
 
 ---
 
-### `check_test` — Test Pulse (run suite + health)
+## Tool: `check_test`
 
-Runs the detected test runner and returns structured health: `fix_first`, `broken_areas`, `failure_clusters`, coverage signals, `session_id`. **Not** for deciding which product files to edit first (use find/architecture).
+**What it does:** Test Pulse — runs the suite and returns `fix_first`, `broken_areas`, `failure_clusters`, `session_id`. Not for choosing which product files to edit.
 
-| task | Credits (hosted) |
-|------|------------------|
-| `detect` / `missing` | 0 (inventory / test gaps) |
-| `run` | ~1 on success |
-| `failures` / `list` / `status` / `why` / `fix_prompt` on `session_id` | 0 after a run |
+**Call when:** After edits; “do tests pass?”; missing coverage.
+
+**DO NOT call when:** Finding symbols or deciding what to implement.
+
+**Example — user: “did my change break tests?”**
 
 ```
 check_test({ "task": "missing", "path": "/abs/project" })
@@ -234,182 +210,143 @@ check_test({ "task": "failures", "session_id": "ts_from_run" })
 check_test({ "task": "fix_prompt", "session_id": "ts_from_run" })
 ```
 
-**Hosted:** public GitHub URL or `inline_files` (local absolute paths often blocked on pure hosted). **Stdio / CLI:** runs on the machine.  
-After edits that matter: run once, then free session slices — do not re-run full suite every question.
+**After it returns:** Fix `fix_first` / `broken_areas`. Reuse `session_id` — do not re-`run` unless code changed. `detect` / `missing` are 0 credits; `run` ~1; session slices free.
+
+CLI: `zephex test` then `check test failures` · `check test fix-prompt --copy`.
 
 ---
 
-### `audit_headers` — live URL audit (user-supplied URL only)
+## Tool: `audit_headers`
 
-Security grade for a **public HTTPS URL the user provided** (their staging/prod site). TLS/headers/cookies, health, tech stack; optional deep secret scan. Blocks localhost/private IPs. **Not** for scraping docs or arbitrary third-party pages into the prompt. Read `plain_summary` / `fix_first` first.
+**What it does:** Live HTTPS grade for a **URL the user pasted**. Headers, TLS, health. Blocks localhost.
+
+**Call when:** They give a staging/prod URL.
+
+**DO NOT call when:** Repo search, tests, or random third-party pages.
+
+**Example — user: “is https://myapp.vercel.app healthy?”**
 
 ```
-audit_headers({ "url": "https://myapp.example.com" })
-audit_headers({ "url": "https://staging.example.com", "scan_depth": "deep" })
+audit_headers({ "url": "https://myapp.vercel.app" })
 ```
+
+**After it returns:** Read `plain_summary` / `fix_first` first.
+
+CLI: `zephex check url https://…` · `site https://…`. Do **not** pass `site --fast`.
 
 ---
 
-### `project_memory` — facts across sessions
+## Tool: `project_memory`
 
-Persists decisions/gotchas/conventions **per project** (stdio local SQLite or hosted cloud with API key). Actions: `remember` · `recall` · `list` · `forget`. Use the **same** `path` bucket every time.
+**What it does:** Save/recall facts **not** in source — decisions, gotchas, conventions. Same `path` every time.
+
+**Call when:** User says remember/recall; after a non-obvious decision.
+
+**DO NOT call when:** Stack scan (`get_project_context`) or a fact already in this chat.
+
+**Example — user: “remember we use cookie JWT”**
 
 ```
 project_memory({
   "action": "remember",
   "path": "/abs/project",
   "title": "Auth uses cookie JWT",
-  "content": "Session in httpOnly cookie; refresh on /api/auth/refresh",
+  "content": "Access in httpOnly cookie; refresh on /api/auth/refresh",
   "type": "gotcha",
   "area": "auth"
 })
 project_memory({ "action": "recall", "path": "/abs/project", "query": "auth cookies" })
 ```
 
-Types: `decision` · `gotcha` · `goal` · `preference` · `area_fact` · `convention`.  
-**Not** for stack detection (use `get_project_context`).
+CLI: `zephex remember "…"` · `zephex recall auth` · `memory list` (not `memory recall`).
 
 ---
 
-### `keep_thinking` — multi-step reasoning
+## Tool: `keep_thinking`
 
-Scaffold hypotheses across tool calls. Pass `lastActions` for loop detection. Cap ~10 thoughts/session. Required: `thought`, `thoughtNumber`, `totalThoughts`, `nextThoughtNeeded`, `confidence`, `thoughtType`.
+**What it does:** Multi-step plan/debug with loop detection. Required: `thought`, `thoughtNumber`, `totalThoughts`, `nextThoughtNeeded`, `confidence`, `thoughtType`. Pass `lastActions`.
+
+**Call when:** Stuck after 2+ failed attempts; high-blast-radius plan (auth, billing, schema).
+
+**DO NOT call when:** The fix is already known.
+
+**Wrong MCP name:** `thinking` → use **`keep_thinking` only**.
+
+**Example — user: “logout loop, two fixes failed”**
 
 ```
 keep_thinking({
-  "thought": "Hypothesis: rate limit runs after the upload handler",
+  "thought": "Hypothesis: refresh token is not rotated on logout",
   "thoughtNumber": 1,
   "totalThoughts": 5,
   "nextThoughtNeeded": true,
   "confidence": 0.6,
   "thoughtType": "hypothesis",
-  "goalAnchor": "Add rate limiting to POST /api/upload",
-  "lastActions": ["find_code(query=rateLimit)", "read_code(target=handleUpload)"],
-  "area": "api"
+  "goalAnchor": "Fix auth logout loop",
+  "lastActions": ["find_code(query=refreshToken)", "read_code(target=authMiddleware)"]
 })
 ```
 
-Use when stuck after 2+ failed attempts or high-blast-radius plans (auth, billing, schema).
+CLI: `zephex think "…"` — one-shot only. Multi-turn stays in the editor.
 
 ---
 
-### `Zephex_dev_info` — expert playbooks (not their private repo)
+## Tool: `Zephex_dev_info`
 
-Standard patterns: Stripe webhooks, Supabase RLS, CSP, Next auth, etc. Always **search** then **get** by slug.
+**What it does:** Expert playbooks (Stripe webhooks, RLS, CSP) — **not** their private repo. Always `search` then `get` by slug.
+
+**Call when:** Generic “how do Stripe webhooks work?” after repo tools.
+
+**DO NOT call when:** You need *their* files (`find_code`) or a package CVE (`check_package`).
+
+**Example — user: “Stripe webhook raw body in Next”**
 
 ```
 Zephex_dev_info({ "operation": "search", "query": "Stripe webhook raw body", "category": "payments" })
-Zephex_dev_info({ "operation": "get", "slug": "<slug-from-search>" })
+Zephex_dev_info({ "operation": "get", "slug": "<from-search>" })
 ```
+
+CLI: `zephex docs "…"` · `ask "…"`.
 
 ---
 
-## Terminal CLI (Mode 2)
-
-### Install (required for shell commands)
+## Terminal CLI — Mode 2
 
 ```bash
-# Mac / Linux (both URLs are the same installer)
-curl -fsSL https://zephex.dev/cli/install.sh | bash
-curl -fsSL https://zephex.dev/install.sh | bash
+curl -fsSL https://zephex.dev/install.sh | bash   # Mac/Linux
+# Windows: irm https://zephex.dev/install.ps1 | iex
 
-# Windows PowerShell
-irm https://zephex.dev/install.ps1 | iex
+cd /path/to/their-project
+zephex login
+zephex deep --json                 # agent packet schema_version: 1
+zephex overview
+zephex structure --agent           # 0 credits
+zephex architecture --focus auth
+zephex find "auth"
+zephex test && zephex check test failures
+zephex safe lodash
+zephex learn                       # free catalog
 ```
 
-Bundles Node under `~/.zephex` when needed. Then:
+If CLI is not installed, **do not invent** CLI output — use MCP or tell them to install.
 
-```bash
-cd /path/to/their-project    # always — CLI uses cwd
-zephex login                 # browser or paste API key
-zephex                       # interactive shell — type /
-```
-
-Without install, **do not invent** CLI output — use MCP tools or tell the user to install.
-
-### Power commands agents should know
-
-| Command | What it does | Notes |
-|---------|--------------|--------|
-| `zephex overview` | Product story, stack bars, how to run | `--json` · `--full` · `--force` · `--cwd` |
-| `zephex deep` | Full dossier: stack + wiring + where to look | Optional task string; **`--json`** = agent packet `schema_version: 1` |
-| `zephex structure` | Folder / language map | **0 credits**; `--agent` = FACTS/NEXT/GAPS |
-| `zephex architecture` | Wiring map (same brain as MCP) | `--focus auth` · `--mode deep` · `--agent` |
-| `zephex find "…"` | Search | Also `defs` · `rename` · `paste` |
-| `zephex read path` | File / symbol brief | `summarize` · `outline` · `symbol` |
-| `zephex test` | Run Test Pulse suite | Alias: `check test` |
-| `zephex check test failures` | Failure details from last run | Needs prior `test` session |
-| `zephex check test missing` | Sources without tests | 0 credits, no prior run |
-| `zephex check test fix-prompt --copy` | Pasteable fix prompt for the agent | After a failing run |
-| `zephex check test --dry-run` | Show detected runner only | 0 credits |
-| `zephex safe <pkg>` | Package safety | `check-package next --task upgrade --from-version 14` |
-| `zephex deps` | Scan direct dependencies | |
-| `zephex env` | `.env` vs `.env.example` gaps | Free local |
-| `zephex check url https://…` | Live URL audit | Also `site https://…` |
-| `zephex remember` / `recall` | Project memory | Same as MCP memory |
-| `zephex learn` | Free catalog of tools/commands | No API call |
-| `zephex doctor` | Key, network, editor wiring | |
-| `zephex agent` | MCP vs CLI short guide | Free |
-
-**Deep for agents:**
-
-```bash
-cd /abs/project
-zephex deep --json
-# optional task:
-zephex deep "add rate limiting to upload API" --json
-# Open likely_touch paths; follow next_commands; use run.dev / run.test
-```
-
-**Test loop (critical):**
-
-```bash
-zephex check test --dry-run          # what runner will run
-zephex check test missing            # gaps (free)
-zephex test                          # bills ~1; creates session
-zephex check test failures           # free session slice
-zephex check test fix-prompt --copy  # paste into the agent
-zephex check test status             # health dashboard
-```
-
-If failures says *No recent test session* → run `test` first.
-
-**Interactive shell:** `/overview` · `/deep` · `/structure` · `/architecture` · `/find` · `/test` · `/failures` · `/safe` · `/usage` · `/quit`. After a tool prints, press Enter to return to the TUI. Ctrl+C cancels.
-
-**Monorepo:** `zephex overview --cwd apps/web` or `cd apps/web` first.
-
-**Discover without burning credits:** `zephex learn` · `zephex learn deep` · `zephex cli-guide tools`.
+**Deep `--json`:** open `likely_touch[0..2]`, follow `plan` / `next_commands`.  
+**No test session:** run `zephex test` before `check test failures`.
 
 ---
 
-## Setup (editor MCP)
+## If they only said “use Zephex”
 
-```bash
-npx zephex setup                 # wizard
-npx zephex setup --cursor        # or --claude, --vscode, …
-npx zephex doctor                # health
-```
-
-API key: [zephex.dev/dashboard/api-keys](https://zephex.dev/dashboard/api-keys).  
-Manual editor templates live under `configs/` in this repo (Cursor, VS Code, JetBrains, …) if setup is not used.
-
----
-
-## If they only said "use Zephex"
-
-1. Infer the goal from their message.  
+1. Infer the goal.  
 2. Pick a **Workflow** row.  
-3. MCP if connected; else CLI (if installed) or ask them to connect/install.  
-4. Answer only from tool or CLI results.
-
-### Example chains
+3. Call the tool.  
+4. Answer only from the result.
 
 **Onboard**
 
 ```
 get_project_context({ "path": "/abs/app", "topic": "identity" })
 get_project_context({ "path": "/abs/app", "topic": "run" })
-# or: zephex deep --json
 ```
 
 **Implement a feature**
@@ -425,28 +362,40 @@ check_test({ "task": "run", "path": "/abs/app", "diff_base": "main" })
 **Auth map**
 
 ```
-explain_architecture({ "path": "/abs/app", "focus": "auth", "mode": "overview" })
-read_code on entry/auth files from the result
+explain_architecture({ "path": "/abs/app", "focus": "auth" })
+# then read_code on the entry/auth files it returns
 ```
 
 ---
 
-## Errors
+## Legacy aliases (still route)
 
-| Error | Action |
-|-------|--------|
-| Unauthorized / no key | `npx zephex setup` or `zephex login` |
-| 429 | Tell user; retry once later |
-| Missing `path` | Ask absolute project directory |
-| CLI not found | Install: `curl -fsSL https://zephex.dev/cli/install.sh \| bash` |
-| No test session | Run `zephex test` before `check test failures` |
+| Wrong name | Use instead |
+|------------|-------------|
+| `thinking` | `keep_thinking` only |
+| `scope_task` | `find_code` + `explain_architecture`, or CLI `deep "task"` |
+| `audit_package` | `check_package` with `task=upgrade` or `task=security` |
 
-## Mistakes
+---
 
-- Recommending install without `check_package` / `safe`
-- Blind multi-file read without `find_code` or architecture first
-- Confusing **structure** (folders, free) with **architecture** (wiring, ~7 credits)
-- Calling `check_test` to decide what to implement (use find/architecture; use check_test **after** edits)
-- Inventing CLI output when the CLI is not installed
-- Spamming `deep` / architecture every turn (costs credits)
-- Describing their tree from memory when Zephex is available
+## Common mistakes
+
+- Answering about their repo without a Zephex call when they said “use Zephex”
+- Using `scope_task`, `audit_package`, or `thinking`
+- `find_code` when path+symbol already known
+- `check test failures` before any `test` run
+- Install without `check_package` / `safe`
+- Confusing **structure** (layout, free) with **architecture** (wiring)
+- Spamming `deep` / architecture every turn
+- `site --fast` (unknown flag)
+- `memory recall` instead of `recall`
+- Wrong monorepo package — use `--cwd` or `cd` into the app
+
+## Error handling
+
+- **Unauthorized** — `npx zephex setup` / `zephex login`
+- **429** — tell the user; retry once
+- **Missing path** — ask for the absolute project directory
+- **CLI session errors** — run the prerequisite (`test` before `failures`)
+
+Do not silently answer from training data about **their** codebase.
